@@ -54,10 +54,12 @@ OBJECTS_DIR   = ./
 
 SOURCES       = calculator.cpp \
 		calculatordialog.cpp \
-		main.cpp moc_calculatordialog.cpp
+		main.cpp qrc_image.cpp \
+		moc_calculatordialog.cpp
 OBJECTS       = calculator.o \
 		calculatordialog.o \
 		main.o \
+		qrc_image.o \
 		moc_calculatordialog.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -518,7 +520,8 @@ Makefile: calculator.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/lib/qt/mk
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		calculator.pro
+		calculator.pro \
+		image.qrc
 	$(QMAKE) -o Makefile calculator.pro
 /usr/lib/qt/mkspecs/features/spec_pre.prf:
 /usr/lib/qt/mkspecs/common/unix.conf:
@@ -743,6 +746,7 @@ Makefile: calculator.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/lib/qt/mk
 /usr/lib/qt/mkspecs/features/yacc.prf:
 /usr/lib/qt/mkspecs/features/lex.prf:
 calculator.pro:
+image.qrc:
 qmake: FORCE
 	@$(QMAKE) -o Makefile calculator.pro
 
@@ -757,6 +761,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents image.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents calculator.h calculatordialog.h $(DISTDIR)/
 	$(COPY_FILE) --parents calculator.cpp calculatordialog.cpp main.cpp $(DISTDIR)/
@@ -783,8 +788,14 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_image.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_image.cpp
+qrc_image.cpp: image.qrc \
+		/usr/bin/rcc \
+		image/calculator.ico
+	/usr/bin/rcc -name image image.qrc -o qrc_image.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -811,7 +822,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean 
 
 ####### Compile
 
@@ -824,6 +835,9 @@ calculatordialog.o: calculatordialog.cpp calculatordialog.h \
 
 main.o: main.cpp calculatordialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+qrc_image.o: qrc_image.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_image.o qrc_image.cpp
 
 moc_calculatordialog.o: moc_calculatordialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_calculatordialog.o moc_calculatordialog.cpp

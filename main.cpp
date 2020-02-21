@@ -11,6 +11,7 @@ int main(int argc,char *argv[])
     // MainWindow w;
     // cout<<"w"<<endl;
     CalculatorDialog dlg;
+    dlg.setWindowIcon(QIcon(":/logo/image/calculator.ico"));
 
     dlg.show();
     // dlg.exec();

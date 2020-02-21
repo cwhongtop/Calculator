@@ -17,3 +17,4 @@ INCLUDEPATH += .
 HEADERS += calculator.h calculatordialog.h
 SOURCES += calculator.cpp calculatordialog.cpp main.cpp
 QT += widgets core gui
+RESOURCES += image.qrc
